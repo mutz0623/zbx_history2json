@@ -29,6 +29,16 @@ $ git clone https://github.com/mutz0623/zbx_history2json.git
 $ cd zbx_history2json
 $ make source-config
 $ make
+```
+
+modify zabbix_server.conf
+ (LoadModulePath,LoadModule)
+```
+$ vi /etc/zabbix/zabbix_server.conf
+```
+
+install module and restart daemon.
+```
 $ sudo make install 
 ```
 
