@@ -24,6 +24,7 @@ clean:
 install:$(TARGET)
 	test $$(whoami) == "root"
 	service zabbix-server stop
+	[ -d $(MODULEPATH) ] || mkdir $(MODULEPATH)
 	install -C $(TARGET) $(MODULEPATH)
 	ls $(MODULEPATH)/$(MODULECONF) || cp $(MODULECONF) $(MODULEPATH)
 	service zabbix-server start
