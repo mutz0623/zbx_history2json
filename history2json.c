@@ -311,7 +311,7 @@ static void	history2json_general_cb(const int item_type, const void *history, in
 	for (i = 0; i < history_num; i++){
 
 		if( CONFIG_ENABLE == CONFIG_JSON_OUTPUT_HOSTINFO ){
-			// Get hostname from item key
+			// Get hostname from item id
 			switch(item_type){
 				case  H2J_ITEM_FLOAT:
 					DCconfig_get_hosts_by_itemids( &host, &(history_float[i].itemid), &err, 1);
