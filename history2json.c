@@ -191,9 +191,11 @@ static void	history2json_general_cb(const int item_type, const void *history, in
 	struct	zbx_json j;
 
 	DC_HOST	host;
+	DC_ITEM	items;
 	int	err;
 	char	*hostname = NULL;
 	int	hostid = 0;
+	char	*itemkey = NULL;
 
 	time_t	t;
 	struct	tm tm_tmp;
@@ -341,6 +343,37 @@ static void	history2json_general_cb(const int item_type, const void *history, in
 			}
 		}
 
+		if( CONFIG_ENABLE == CONFIG_JSON_OUTPUT_ITEMINFO ){
+			// Get item key from item id
+			switch(item_type){
+				case  H2J_ITEM_FLOAT:
+					DCconfig_get_items_by_itemids( &items, &(history_float[i].itemid), &err, 1);
+					break;
+				case  H2J_ITEM_INTEGER:
+					DCconfig_get_items_by_itemids( &items, &(history_integer[i].itemid), &err, 1);
+					break;
+				case  H2J_ITEM_STRING:
+					DCconfig_get_items_by_itemids( &items, &(history_string[i].itemid), &err, 1);
+					break;
+				case  H2J_ITEM_TEXT:
+					DCconfig_get_items_by_itemids( &items, &(history_text[i].itemid), &err, 1);
+					break;
+				case  H2J_ITEM_LOG:
+					DCconfig_get_items_by_itemids( &items, &(history_log[i].itemid), &err, 1);
+					break;
+				default:
+					THIS_SHOULD_NEVER_HAPPEN;
+			}
+
+			if( FAIL == err ){
+				zabbix_log(LOG_LEVEL_WARNING, "[%s] In %s() %s:%d failed in  DCconfig_get_items_by_itemids()",
+				           MODULE_NAME, __FUNCTION__, __FILE__, __LINE__ );
+				itemkey = NULL;
+			}else{
+				itemkey = zbx_strdup(itemkey, items.key_orig );
+			}
+		}
+
 		// Packing item values to json format
 		zbx_json_init(&j, ZBX_JSON_STAT_BUF_LEN);
 
@@ -353,6 +386,9 @@ static void	history2json_general_cb(const int item_type, const void *history, in
 		}
 		if( CONFIG_ENABLE == CONFIG_JSON_OUTPUT_TYPE ){
 			zbx_json_addstring(&j, ZBX_PROTO_TAG_TYPE, item_type_str[item_type], ZBX_JSON_TYPE_STRING);
+		}
+		if( CONFIG_ENABLE == CONFIG_JSON_OUTPUT_ITEMINFO ){
+			zbx_json_addstring(&j, ZBX_PROTO_TAG_KEY, itemkey, ZBX_JSON_TYPE_STRING);
 		}
 
 		switch(item_type){
@@ -406,6 +442,8 @@ static void	history2json_general_cb(const int item_type, const void *history, in
 
 		zbx_json_free(&j);
 		zbx_free(hostname);
+		zbx_free(itemkey);
+		DCconfig_clean_items( &items, &err, 1);
 	}
 
 
