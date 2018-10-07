@@ -286,7 +286,7 @@ static void	history2json_general_cb(const int item_type, const void *history, in
 	if ( CONFIG_ENABLE == CONFIG_JSON_OUTPUT_SEP_TYPE ){
 		filename_suffix_type = zbx_dsprintf(NULL, ".%s", item_type_str[item_type]);
 	}else{
-		filename_suffix_type = zbx_dsprintf(NULL, "");
+		filename_suffix_type = zbx_dsprintf(NULL, "%s", "");
 	}
 
 	filename = zbx_dsprintf(filename, "%s/%s%s%s",
