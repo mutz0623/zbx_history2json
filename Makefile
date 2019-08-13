@@ -1,6 +1,6 @@
 
 CC = gcc
-CFLAG = -Wall -O3 -g
+CFLAG = -Wall -Wextra -O3 -g
 SRC = history2json.c config_load.c
 HDR = config_load.h
 OBJ = $(SRC:%.c=%.o)

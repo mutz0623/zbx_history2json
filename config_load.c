@@ -41,7 +41,7 @@ void     zbx_module_load_config(void)
 				PARM_OPT,		0,		1},
 		{"JSONOutputSeparateType",	&CONFIG_JSON_OUTPUT_SEP_TYPE,	TYPE_INT,
 				PARM_OPT,		0,		1},
-		{NULL}
+		{NULL, NULL, 0, 0, 0, 0}
 	};
 
 

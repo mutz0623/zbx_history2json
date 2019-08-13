@@ -43,7 +43,7 @@ static ZBX_METRIC keys[] =
 {
 	{"history2json.enable",		0,		history2json_enable,	NULL},
 	{"history2json.path",		0,		history2json_path,	NULL},
-	{NULL}
+	{NULL, 0, 0, NULL}
 };
 
 /******************************************************************************
@@ -90,14 +90,14 @@ ZBX_METRIC	*zbx_module_item_list(void)
 	return keys;
 }
 
-static int	history2json_enable(AGENT_REQUEST *request, AGENT_RESULT *result)
+static int	history2json_enable(AGENT_REQUEST *request __attribute__((unused)), AGENT_RESULT *result)
 {
 	SET_UI64_RESULT(result, CONFIG_JSON_OUTPUT_ENABLE);
 
 	return SYSINFO_RET_OK;
 }
 
-static int	history2json_path(AGENT_REQUEST *request, AGENT_RESULT *result)
+static int	history2json_path(AGENT_REQUEST *request __attribute__((unused)), AGENT_RESULT *result)
 {
 	SET_STR_RESULT(result, zbx_strdup(NULL, CONFIG_JSON_OUTPUT_PATH) );
 
