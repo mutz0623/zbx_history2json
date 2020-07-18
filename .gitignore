@@ -1,3 +1,6 @@
-*.o
-*.so
+bin/history2json.so
+obj/*.d
+obj/*.o
+doc/html/*
+doc/scan-build/*
 core.*

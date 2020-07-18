@@ -5,7 +5,7 @@
 - could split files by date and item types in settings.
 
 # Requirements
-- zabbix 3.4
+- zabbix 3.4 or later
 
 # How to use
 

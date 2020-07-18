@@ -1,26 +1,35 @@
-
 CC = gcc
-CFLAG = -Wall -Wextra -O3 -g
-SRC = history2json.c config_load.c
-HDR = config_load.h
-OBJ = $(SRC:%.c=%.o)
-TARGET = history2json.so
+CFLAG = -MMD -MP -Wall -Wextra -O3 -fPIC
+LDFLAG = -shared
+INCLUDE = -I../zabbix-src/include
+SRCDIR = ./src
+SRC = $(wildcard $(SRCDIR)/*.c)
+OBJDIR = ./obj
+OBJ = $(addprefix $(OBJDIR)/, $(notdir $(SRC:.c=.o)))
+BINDIR = ./bin
+BIN = history2json.so
+TARGET = $(BINDIR)/$(BIN)
+DEPENDS = $(OBJ:.o=.d)
 MODULEPATH = /etc/zabbix/modules
 MODULECONF = history2json.conf
 
-.SUFFIXES: .c .o
-
 $(TARGET): $(OBJ)
-	$(CC) -shared -o $@ $(OBJ) -fPIC
+	-mkdir -p $(BINDIR)
+	$(CC) $(LDFLAG) -o $@ $^
 
-$(OBJ): $(HDR) Makefile
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
+	-mkdir -p $(OBJDIR)
+	$(CC) $(CFLAG) $(INCLUDE) -o $@ -c $<
 
-.c.o:
-	$(CC) -c $< -I../zabbix-src/include/ -fPIC -c $(CFLAG)
+-include $(DEPENDS)
+
+.PHONY: all clean
+all: clean $(TARGET)
 
 clean:
-	rm -f $(TARGET) $(OBJ)
+	-rm -f $(TARGET) $(OBJ) $(DEPENDS)
 
+.PHONY: install test
 install:$(TARGET)
 	test $$(whoami) == "root"
 	service zabbix-server stop
@@ -35,6 +44,7 @@ install:$(TARGET)
 test:$(target)
 	md5sum  $(MODULEPATH)/$(TARGET) ./$(TARGET) || :
 
+.PHONY: log-level-up log-level-down check source-config
 log-level-up:
 	zabbix_server --runtime-control log_level_increase="history syncer"
 
@@ -49,4 +59,25 @@ check:
 
 source-config:
 	cd ../zabbix-src/; sh ./configure --build=x86_64-redhat-linux-gnu --host=x86_64-redhat-linux-gnu --program-prefix= --disable-dependency-tracking --prefix=/usr --exec-prefix=/usr --bindir=/usr/bin --sbindir=/usr/sbin --sysconfdir=/etc --datadir=/usr/share --includedir=/usr/include --libdir=/usr/lib64 --libexecdir=/usr/libexec --localstatedir=/var --sharedstatedir=/var/lib --mandir=/usr/share/man --infodir=/usr/share/info --enable-dependency-tracking --sysconfdir=/etc/zabbix --libdir=/usr/lib64/zabbix --enable-agent --enable-proxy --enable-ipv6 --enable-java --with-net-snmp --with-ldap --with-libcurl --with-openipmi --with-unixodbc --with-ssh2 --with-libxml2 --with-libevent --with-libpcre --with-openssl --enable-server --with-jabber --with-postgresql
+
+.PHONY :doc doc-clean
+doc:
+	doxygen ./doc/Doxyfile
+
+doc-clean:
+	-rm -rf ./doc/html/
+
+.PHONY : scan-build scan-build-clean
+scan-build:clean
+	-mkdir -p ./doc/scan-build/
+	scan-build -o ./doc/scan-build/ $(MAKE)
+
+scan-build-clean:
+	-rm -rf ./doc/scan-build/*
+
+.PHONY: clean-all
+clean-all: clean doc-clean scan-build-clean
+	$(MAKE) clean
+	$(MAKE) doc-clean
+	$(MAKE) scan-build-clean
 
