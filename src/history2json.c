@@ -329,6 +329,7 @@ static void	history2json_general_cb(const int item_type, const void *history, in
 					DCconfig_get_hosts_by_itemids( &host, &(history_log[i].itemid), &err, 1);
 					break;
 				default:
+					err = FAIL;
 					THIS_SHOULD_NEVER_HAPPEN;
 			}
 
@@ -362,6 +363,7 @@ static void	history2json_general_cb(const int item_type, const void *history, in
 					DCconfig_get_items_by_itemids( &items, &(history_log[i].itemid), &err, 1);
 					break;
 				default:
+					err = FAIL;
 					THIS_SHOULD_NEVER_HAPPEN;
 			}
 
