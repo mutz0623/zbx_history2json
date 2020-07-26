@@ -12,6 +12,7 @@ TARGET = $(BINDIR)/$(BIN)
 DEPENDS = $(OBJ:.o=.d)
 MODULEPATH = /etc/zabbix/modules
 MODULECONF = history2json.conf
+CONFDIR = ./conf
 
 $(TARGET): $(OBJ)
 	-mkdir -p $(BINDIR)
@@ -35,7 +36,7 @@ install:$(TARGET)
 	service zabbix-server stop
 	[ -d $(MODULEPATH) ] || mkdir $(MODULEPATH)
 	install -C $(TARGET) $(MODULEPATH)
-	ls $(MODULEPATH)/$(MODULECONF) || cp $(MODULECONF) $(MODULEPATH)
+	ls $(MODULEPATH)/$(MODULECONF) || cp $(CONFDIR)/$(MODULECONF) $(MODULEPATH)
 	service zabbix-server start
 	service zabbix-server status
 	sleep 0.5
