@@ -42,8 +42,8 @@ install:$(TARGET)
 	sleep 0.5
 	tail /var/log/zabbix/zabbix_server.log
 
-test:$(target)
-	md5sum  $(MODULEPATH)/$(TARGET) ./$(TARGET) || :
+test:$(TARGET)
+	md5sum  $(MODULEPATH)/$(BIN) $(TARGET) || :
 
 .PHONY: log-level-up log-level-down check source-config
 log-level-up:
